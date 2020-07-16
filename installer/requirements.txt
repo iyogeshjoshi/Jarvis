@@ -1,30 +1,40 @@
-archey4; python_version >= '3.5' and sys_platform != 'darwin'
+akinator.py
+archey4; sys_platform != 'darwin'
 beautifulsoup4
 colorama
 distro
 flake8
 forex-python
-funcsigs; python_version <= '2.7'
 googletrans
 IMDbPY
 instantmusic
 mock
 nltk
+pdfkit
 pick
 pluginmanager
+psutil; sys_platform == 'win32'
 pycricbuzz
 pydoc-markdown
+pydub
 pync==1.6.1; sys_platform == 'darwin'
 pypiwin32; sys_platform == 'win32'
 pyreadline; sys_platform == 'win32'
 python-dateutil
 pytimeparse
-pyttsx3; sys_platform != 'darwin'
+pyttsx3 == 2.71; sys_platform != 'darwin'
 pywin32; sys_platform == 'win32'
 requests[security]
-six
 speedtest-cli
 sympy
+tabulate
 termdown
+opencv-python
 wikipedia
+win10toast; sys_platform == 'win32'
+gtts
+playsound
 windows-curses; sys_platform == 'win32'
+Image
+img2pdf
+pdf2image

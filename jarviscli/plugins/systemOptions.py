@@ -1,9 +1,9 @@
 import os
-from platform import architecture, dist, release, mac_ver
+from platform import architecture, release, mac_ver
 from platform import system as sys
+import distro
 from colorama import Fore, Style
-
-from plugin import LINUX, MACOS, WINDOWS, PYTHON2, PYTHON3, plugin, require
+from plugin import LINUX, UNIX, MACOS, WINDOWS, plugin, require
 
 
 @require(platform=MACOS, native="pmset")
@@ -33,7 +33,7 @@ def Os__MAC(jarvis, s):
     jarvis.say('[*] Kernel Release Version: ' + release(), Fore.GREEN)
     jarvis.say('[*] macOS System version: ' + mac_ver()[0], Fore.GREEN)
     for _ in architecture():
-        if _ is not '':
+        if _ != '':
             jarvis.say('[*] ' + _, Fore.GREEN)
 
 
@@ -44,29 +44,22 @@ def Os__LINUX(jarvis, s):
     jarvis.say('[!] Operating System Information', Fore.BLUE)
     jarvis.say('[*] ' + sys(), Fore.GREEN)
     jarvis.say('[*] ' + release(), Fore.GREEN)
-    jarvis.say('[*] ' + dist()[0], Fore.GREEN)
+    jarvis.say('[*] ' + distro.name(), Fore.GREEN)
     for _ in architecture():
         jarvis.say('[*] ' + _, Fore.GREEN)
 
 
-@require(python=PYTHON3, platform=LINUX)
+@require(platform=LINUX)
 @plugin('systeminfo')
-def systeminfo__PY3__LINUX(jarvis, s):
+def systeminfo__LINUX(jarvis, s):
     """Display system information with distribution logo"""
     from archey import archey
     archey.main()
 
 
-@require(python=PYTHON3, platform=MACOS, native="screenfetch")
+@require(platform=MACOS, native="screenfetch")
 @plugin('systeminfo')
-def systeminfo__PY3_MAC(jarvis, s):
-    """Display system information with distribution logo"""
-    os.system("screenfetch")
-
-
-@require(python=PYTHON2, native="screenfetch")
-@plugin('systeminfo')
-def systeminfo__PY2(jarvis, s):
+def systeminfo__MAC(jarvis, s):
     """Display system information with distribution logo"""
     os.system("screenfetch")
 
@@ -78,12 +71,38 @@ def systeminfo_win(jarvis, s):
     os.system("systeminfo")
 
 
-@require(native="free")
+@require(native="free", platform=UNIX)
 @plugin("check ram")
-def check_ram(jarvis, s):
+def check_ram__UNIX(jarvis, s):
     """
     checks your system's RAM stats.
     -- Examples:
         check ram
     """
     os.system("free -lm")
+
+
+@require(platform=WINDOWS)
+@plugin("check ram")
+def check_ram__WINDOWS(jarvis, s):
+    """
+    checks your system's RAM stats.
+    -- Examples:
+        check ram
+    """
+    import psutil
+    mem = psutil.virtual_memory()
+
+    def format(size):
+        mb, _ = divmod(size, 1024 * 1024)
+        gb, mb = divmod(mb, 1024)
+        return "%s GB %s MB" % (gb, mb)
+    jarvis.say("Total RAM: %s" % (format(mem.total)), Fore.BLUE)
+    if mem.percent > 80:
+        color = Fore.RED
+    elif mem.percent > 60:
+        color = Fore.YELLOW
+    else:
+        color = Fore.GREEN
+    jarvis.say("Available RAM: %s" % (format(mem.available)), color)
+    jarvis.say("RAM used: %s%%" % (mem.percent), color)

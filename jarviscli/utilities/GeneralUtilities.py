@@ -1,33 +1,31 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-from six.moves import input
 from colorama import Fore
 import distutils.spawn
+from platform import win32_ver
 
 
 MACOS = 'darwin'
 WIN = 'win32'
 IS_MACOS = sys.platform == MACOS
 IS_WIN = sys.platform == WIN
-
-
-def wordIndex(data, word):
-    wordList = data.split()
-    return wordList.index(word)
+WIN_VER = None
+if IS_WIN:
+    WIN_VER = win32_ver()[0]
 
 
 def print_say(text, self, color=""):
     """
-        This method give the jarvis the ability to print a text
-        and talk when sound is enable.
+        Gives Jarvis the ability to print text
+        and talk when sound is enabled.
         :param text: the text to print (or talk)
                color: Fore.COLOR (ex Fore.BLUE), color for text
         :return: Nothing to return.
         """
+    print(color + text + Fore.RESET)
     if self.enable_voice:
         self.speech.text_to_speech(text)
-    print(color + text + Fore.RESET)
 
 
 # Functions for printing user output
@@ -68,3 +66,14 @@ def unsupported(platform, silent=False):
 def executable_exists(name):
     binary_path = distutils.spawn.find_executable(name)
     return binary_path is not None and os.access(binary_path, os.X_OK)
+
+
+def get_parent_directory(path):
+    """
+    Removes the file name from the folder and returns
+    the remaining path
+    """
+    path = path.split('/')
+    path.pop()
+    destination = '/'.join(path)
+    return destination
